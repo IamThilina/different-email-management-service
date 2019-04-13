@@ -1,12 +1,10 @@
 /* eslint-disable require-jsdoc */
 // Core modules
 import express from 'express';
+import Decorator from './helpers/decorator';
 
 // Sub routers
-import emailRouter from './routers/emailRouter';
-
-// Custom modules
-import Decorator from './helpers/decorator';
+import emailRouter from './routers/email';
 
 /**
  * router for xyz ms

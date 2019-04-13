@@ -1,5 +1,5 @@
 // core modules
-import Decorator from '../helpers/decorator';
+import Decorator from '../../helpers/decorator';
 
 // helpers
 

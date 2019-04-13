@@ -1,12 +1,14 @@
 // core modules
-import Decorator from '../helpers/decorator';
 import express from 'express';
+import Validator from 'xpress-req-validator';
+import Decorator from '../../helpers/decorator';
 
 // helpers
-import { INTERNAL_ERROR, SUCCESS } from '../helpers/constants';
+import { INTERNAL_ERROR, SUCCESS } from '../../helpers/constants';
+import config from './validation/configs';
 
 // controller
-import emailController from '../controllers/emailController';
+import emailController from '../../controllers/email';
 
 /**
  * Handles all routes related to emails
@@ -19,10 +21,13 @@ class EmailRouter extends Decorator {
 	 */
 	constructor() {
 		super();
-		const router = new express.Router();
-		router.post('/', this.sendEmail.bind(this));
-		router.get('/:id', this.getEmailStatus.bind(this));
-		router.delete('/:id', this.deleteEmail.bind(this));
+		const router = new express.Router(),
+			validator = new Validator(config),
+			validationMiddleware = validator.init();
+
+		router.post('/', validationMiddleware, this.sendEmail.bind(this));
+		router.get('/:id', validationMiddleware, this.getEmailStatus.bind(this));
+		router.delete('/:id', validationMiddleware, this.deleteEmail.bind(this));
 		return router;
 	}
 
