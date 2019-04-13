@@ -26,7 +26,7 @@ class EmailRouter extends Decorator {
 			validationMiddleware = validator.init();
 
 		router.post('/', validationMiddleware, this.sendEmail.bind(this));
-		router.get('/:id', validationMiddleware, this.getEmailStatus.bind(this));
+		router.get('/:id', validationMiddleware, this.getEmailDeliveryStatus.bind(this));
 		router.delete('/:id', validationMiddleware, this.deleteEmail.bind(this));
 		return router;
 	}
@@ -35,7 +35,6 @@ class EmailRouter extends Decorator {
 	 * send an email to given address with given details
 	 * @param {Object} req - express request
 	 * @param {Object} res - express response
-	 * @return {*} -
 	 */
 	sendEmail(req, res) {
 		emailController.sendEmail(req.body)
@@ -52,12 +51,11 @@ class EmailRouter extends Decorator {
 	 * get the status of a previously sent mail
 	 * @param {Object} req - express request
 	 * @param {Object} res - express response
-	 * @return {*} -
 	 */
-	getEmailStatus(req, res) {
-		emailController.getEmailStatus(req.params)
-			.then((ack) => {
-				return res.status(SUCCESS).json(ack);
+	getEmailDeliveryStatus(req, res) {
+		emailController.getEmailDeliveryStatusById(req.params)
+			.then((email) => {
+				return res.status(SUCCESS).json(email);
 			})
 			.catch((err) => {
 				this.logError(err);
@@ -69,12 +67,11 @@ class EmailRouter extends Decorator {
 	 * delete a previously queued email
 	 * @param {Object} req - express request
 	 * @param {Object} res - express response
-	 * @return {*} -
 	 */
 	deleteEmail(req, res) {
-		emailController.deleteEmail(req.params)
-			.then((ack) => {
-				return res.status(SUCCESS).json(ack);
+		emailController.deleteEmailById(req.params)
+			.then((email) => {
+				return res.status(SUCCESS).json(email);
 			})
 			.catch((err) => {
 				this.logError(err);

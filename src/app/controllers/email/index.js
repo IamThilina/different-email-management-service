@@ -1,9 +1,14 @@
 // core modules
 import Decorator from '../../helpers/decorator';
 
-// helpers
+// services
+import emailService from '../../services/email';
 
-// dao
+// daos
+import emailDao from '../../daos/mongo/email';
+
+// helpers
+import {EMAIL_STATUS} from '../../helpers/constants';
 
 
 /**
@@ -18,14 +23,24 @@ class EmailController extends Decorator {
 	 * @param {string} subject - mail subject
 	 * @return {Promise} - promise
 	 */
-	sendEmail({ to, content, subject }) {
-		return new Promise((resolve, reject) => {
-			// TODO : send mail and store in db
-			return resolve({
-				id: "5c8820162d958994f71cbfa6",
-				status: "QUEUED"
-			});
-		});
+	async sendEmail({ to, content, subject }) {
+		try {
+			let emailDoc,
+				status = EMAIL_STATUS.SENT;
+			if(emailService.isEmailSendingWindowOn()) { // can send the mail right now, without queueing
+				await emailService.sendEmail({to, content, subject});
+				emailDoc = await emailDao.insertEmail({to, content, subject, status});
+			} else { // its not the mail sending window, queue the mail to deliver in next email delivery window
+				status = EMAIL_STATUS.QUEUED;
+				emailDoc = await emailDao.insertEmail({to, content, subject, status});
+			}
+			return {
+				id: emailDoc._id,
+				status
+			};
+		} catch (err) {
+			throw err;
+		}
 	}
 
 	/**
@@ -33,14 +48,16 @@ class EmailController extends Decorator {
 	 * @param {string} id - unique email id
 	 * @return {Promise} - promise
 	 */
-	getEmailStatus({ id }) {
-		return new Promise((resolve, reject) => {
-			// TODO : get mail status from db
-			return resolve({
-				id: "5c8820162d958994f71cbfa6",
-				status: "SENT"
-			});
-		});
+	async getEmailDeliveryStatusById({ id }) {
+		try {
+			const {_id, status} = await emailDao.getEmailById(id);
+			return {
+				id: _id,
+				status
+			};
+		} catch (err) {
+			throw err;
+		}
 	}
 
 	/**
@@ -48,14 +65,16 @@ class EmailController extends Decorator {
 	 * @param {string} id - unique email id
 	 * @return {Promise} - promise
 	 */
-	deleteEmail({ id }) {
-		return new Promise((resolve, reject) => {
-			// TODO : delete mail if in queued state
-			return resolve({
-				id: "5c8820162d958994f71cbfa6",
+	async deleteEmailById({ id }) {
+		try {
+			await emailDao.deleteEmailById(id);
+			return {
+				id,
 				deleted: true
-			});
-		});
+			};
+		} catch (err) {
+			throw err;
+		}
 	}
 }
 

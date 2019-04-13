@@ -8,10 +8,14 @@ export default mongoose.model('emails', new Schema({
 	status: {
 		type: String,
 		enum: [EMAIL_STATUS.SENT, EMAIL_STATUS.QUEUED, EMAIL_STATUS.FAILED]
+	},
+	archived: {
+		type: Boolean,
+		default: false
 	}
 }, {
 	timestamps: {
-		createdAt: 'created_at',
-		updatedAt: 'updated_at'
+		createdAt: 'createdAt',
+		updatedAt: 'updatedAt'
 	}
 }));

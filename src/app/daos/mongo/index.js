@@ -8,13 +8,13 @@ import mongoose from 'mongoose';
 import { definitions } from '../../../configs';
 
 const generateMongoUrl = ({
-	HOST_1: host_1,
-	HOST_2: host_2,
-	HOST_3: host_3,
-	DB: db,
-	USER: user,
-	PASSWORD: password,
-	CLUSTER: cluster,
+	MONGO_HOST_1: host_1,
+	MONGO_HOST_2: host_2,
+	MONGO_HOST_3: host_3,
+	MONGO_DB: db,
+	MONGO_USER: user,
+	MONGO_PASSWORD: password,
+	MONGO_CLUSTER: cluster,
 }) => {
 	if (!(host_1 && host_2 && host_3 && db && cluster)) {
 		throw new Error('Details provided to establish the mongo connection are invalid');
