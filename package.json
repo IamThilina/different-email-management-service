@@ -1,0 +1,66 @@
+{
+  "name": "different-email-management-service",
+  "version": "1.0.0",
+  "description": "Different- Email Management Service",
+  "main": "server.js",
+  "author": "IamThilina",
+  "license": "MIT",
+  "scripts": {
+    "start": "NODE_ENV=local node dist/server.js",
+    "build": "yarn run clean && yarn install && gulp",
+    "eslint": "eslint 'src/**/*.js'",
+    "eslint-test": "eslint 'test/**/*.js' --fix",
+    "eslint-fix": "eslint 'src/**/*.js' --fix",
+    "lint-staged": "lint-staged",
+    "git-uncommited-changes": "git diff --quiet --cached",
+    "git-unstaged-changes": "git diff --quiet",
+    "esdoc": "esdoc",
+    "clean": "rm -rf dist/",
+    "test": "jest",
+    "prettier": "prettier --config .prettierrc --write src/**/*"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-jest": "^23.4.2",
+    "babel-preset-node8": "^1.2.0",
+    "esdoc": "^1.1.0",
+    "esdoc-standard-plugin": "^1.0.0",
+    "eslint": "^5.4.0",
+    "eslint-plugin-jest": "^21.21.0",
+    "jsdoc": "^3.5.5",
+    "lint-staged": "^7.2.2",
+    "pre-commit": "^1.2.2",
+    "pre-push": "^0.1.1",
+    "prettier": "^1.14.2",
+    "source-map-support": "^0.5.9"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "bunyan": "^1.8.12",
+    "bunyan-format": "^0.2.1",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.3",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "jest": "^23.5.0",
+    "joi": "^14.3.1"
+  },
+  "pre-push": [
+    "eslint",
+    "git-unstaged-changes",
+    "git-uncommited-changes",
+    "test"
+  ],
+  "pre-commit": [
+    "git-branch",
+    "lint-staged"
+  ],
+  "lint-staged": {
+    "**/*.js": [
+      "eslint --fix",
+      "prettier",
+      "git add"
+    ]
+  }
+}
