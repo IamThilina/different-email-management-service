@@ -5,8 +5,9 @@ import * as sourceMaps from "source-map-support";
 import {loadConfigs} from './configs';
 import {ENV} from './app/helpers/constants';
 
-// Modules that need to be bootstrapped
+// Modules that need to be bootstrapped before application starts
 import mongoDbConnector from './app/daos/mongo';
+import cronJobManager from './app/crons';
 
 /**
  * All daemon services that should be instantiated before starting the https server, or that can be
@@ -32,7 +33,7 @@ export default class Daemon {
 	 * Instantiate and/or initiate daemon services that run independent of the https server
 	 */
 	static initAsyncServices() {
-
+		cronJobManager.init();
 	}
 
 	/**

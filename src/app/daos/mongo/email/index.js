@@ -53,6 +53,40 @@ class EmailDao {
 			throw err;
 		}
 	}
+
+	/**
+	 * get emails in given status
+	 * @param {string} status - interested status of the mail
+	 * @return {Promise<void>} -
+	 */
+	async getEmailsByStatus(status) {
+		try {
+			return await Email.find({
+				status,
+				archived: false
+			});
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	/**
+	 * update given fields of emails which match with given match fields
+	 * @param {Object} matchFields - fields to be matched
+	 * @param {Object} updateFields - fields to updated
+	 * @return {Promise<*>} -
+	 */
+	async updateEmail(matchFields, updateFields) {
+		try {
+			return await Email.update({
+				...matchFields
+			}, {
+				...updateFields
+			});
+		} catch (err) {
+			throw err;
+		}
+	}
 }
 
 export default new EmailDao();
