@@ -6,6 +6,7 @@ import {loadConfigs} from './configs';
 import {ENV} from './app/helpers/constants';
 
 // Modules that need to be bootstrapped
+import mongoDbConnector from './app/daos/mongo';
 
 /**
  * All daemon services that should be instantiated before starting the https server, or that can be
@@ -20,6 +21,7 @@ export default class Daemon {
 		try {
 			await Daemon.enableSourceMaps();
 			await Daemon.loadConfigs();
+			await Daemon.connectToMongoDB();
 			return Promise.resolve();
 		} catch (err) {
 			return Promise.reject(err);
@@ -49,5 +51,12 @@ export default class Daemon {
 	 */
 	static async loadConfigs() {
 		return loadConfigs();
+	}
+
+	/**
+	 * connect with mongo db cluster
+	 */
+	static async connectToMongoDB() {
+		return mongoDbConnector();
 	}
 }
