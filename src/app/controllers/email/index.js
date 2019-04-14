@@ -8,14 +8,12 @@ import emailService from '../../services/email';
 import emailDao from '../../daos/mongo/email';
 
 // helpers
-import {EMAIL_STATUS} from '../../helpers/constants';
-
+import { EMAIL_STATUS } from '../../helpers/constants';
 
 /**
  * handles business logic related to emails
  */
 class EmailController extends Decorator {
-
 	/**
 	 * send|queue email based in the time window
 	 * @param {string} to - recipient address
@@ -27,24 +25,32 @@ class EmailController extends Decorator {
 		let emailDoc,
 			status = EMAIL_STATUS.SENT;
 		try {
-			if(emailService.isEmailSendingWindowOn()) { // can send the mail right now, without queueing
-				await emailService.sendEmail({to, content, subject});
-				emailDoc = await emailDao.insertEmail({to, content, subject, status});
-			} else { // its not the mail sending window, queue the mail to deliver in next email delivery window
+			if (emailService.isEmailSendingWindowOn()) {
+				// can send the mail right now, without queueing
+				await emailService.sendEmail({ to, content, subject });
+			} else {
+				// its not the mail sending window, queue the mail to deliver in next email delivery window
 				status = EMAIL_STATUS.QUEUED;
-				emailDoc = await emailDao.insertEmail({to, content, subject, status});
 			}
+			emailDoc = await emailDao.insertEmail({ to, content, subject, status });
 			return {
 				id: emailDoc._id,
-				status
+				status,
 			};
 		} catch (err) {
+			err.appendDetails(this.constructor.name, this.sendEmail.name);
+			this.logError(err);
 			status = EMAIL_STATUS.FAILED;
-			emailDoc = await emailDao.insertEmail({to, content, subject, status});
-			return {
-				id: emailDoc._id,
-				status
-			};
+			try {
+				emailDoc = await emailDao.insertEmail({ to, content, subject, status });
+				return {
+					id: emailDoc._id,
+					status,
+				};
+			} catch (err) {
+				err.appendDetails(this.constructor.name, this.post.name);
+				throw err;
+			}
 		}
 	}
 
@@ -55,12 +61,13 @@ class EmailController extends Decorator {
 	 */
 	async getEmailDeliveryStatusById({ id }) {
 		try {
-			const {_id, status} = await emailDao.getEmailById(id);
+			const { _id, status } = await emailDao.getEmailById(id);
 			return {
 				id: _id,
-				status
+				status,
 			};
 		} catch (err) {
+			err.appendDetails(this.constructor.name, this.getEmailDeliveryStatusById.name);
 			throw err;
 		}
 	}
@@ -72,17 +79,21 @@ class EmailController extends Decorator {
 	 */
 	async deleteQueuedEmailById({ id }) {
 		try {
-			await emailDao.updateEmail({
-				_id: id,
-				status: EMAIL_STATUS.QUEUED
-			}, {
-				archived: true
-			});
+			await emailDao.updateEmail(
+				{
+					_id: id,
+					status: EMAIL_STATUS.QUEUED,
+				},
+				{
+					archived: true,
+				}
+			);
 			return {
 				id,
-				deleted: true
+				deleted: true,
 			};
 		} catch (err) {
+			err.appendDetails(this.constructor.name, this.deleteQueuedEmailById.name);
 			throw err;
 		}
 	}

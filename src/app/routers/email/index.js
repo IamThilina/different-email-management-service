@@ -14,7 +14,6 @@ import emailController from '../../controllers/email';
  * Handles all routes related to emails
  */
 class EmailRouter extends Decorator {
-
 	/**
 	 *
 	 * @return {Router|router} - express email router
@@ -37,11 +36,12 @@ class EmailRouter extends Decorator {
 	 * @param {Object} res - express response
 	 */
 	sendEmail(req, res) {
-		emailController.sendEmail(req.body)
-			.then((ack) => res.status(SUCCESS).json(ack))
-			.catch((err) => {
+		emailController
+			.sendEmail(req.body)
+			.then(ack => res.status(SUCCESS).json(ack))
+			.catch(err => {
 				this.logError(err);
-				return res.status(INTERNAL_ERROR).json({message: err.message});
+				return res.status(INTERNAL_ERROR).json({ message: err.message });
 			});
 	}
 
@@ -51,11 +51,12 @@ class EmailRouter extends Decorator {
 	 * @param {Object} res - express response
 	 */
 	getEmailDeliveryStatus(req, res) {
-		emailController.getEmailDeliveryStatusById(req.params)
-			.then((email) => res.status(SUCCESS).json(email))
-			.catch((err) => {
+		emailController
+			.getEmailDeliveryStatusById(req.params)
+			.then(email => res.status(SUCCESS).json(email))
+			.catch(err => {
 				this.logError(err);
-				return res.status(INTERNAL_ERROR).json({message: err.message});
+				return res.status(INTERNAL_ERROR).json({ message: err.message });
 			});
 	}
 
@@ -65,11 +66,12 @@ class EmailRouter extends Decorator {
 	 * @param {Object} res - express response
 	 */
 	deleteQueuedEmail(req, res) {
-		emailController.deleteQueuedEmailById(req.params)
-			.then((email) => res.status(SUCCESS).json(email))
-			.catch((err) => {
+		emailController
+			.deleteQueuedEmailById(req.params)
+			.then(email => res.status(SUCCESS).json(email))
+			.catch(err => {
 				this.logError(err);
-				return res.status(INTERNAL_ERROR).json({message: err.message});
+				return res.status(INTERNAL_ERROR).json({ message: err.message });
 			});
 	}
 }

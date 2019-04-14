@@ -22,6 +22,7 @@ export default class Daemon {
 	static async initSyncServices() {
 		try {
 			await Daemon.enableSourceMaps();
+			await Daemon.modifyErrorPrototype();
 			await Daemon.loadConfigs();
 			await Daemon.connectToMongoDB();
 			return Promise.resolve();
@@ -61,5 +62,26 @@ export default class Daemon {
 	 */
 	static async connectToMongoDB() {
 		return mongoDbConnector();
+	}
+
+	/**
+	 * Appends additional details to the standard error object
+	 * @param {string} [pathOverrider] - String to override the error propagation path
+	 * @param {string} [causesOverrider] - String to override the error causes list
+	 * @returns {Promise} - task success
+	 */
+	static modifyErrorPrototype(pathOverrider, causesOverrider) {
+		return new Promise((resolve) => {
+			/**
+			 * @param {string} className - Name of the module in which the error was detected
+			 * @param {string} method - Name of the module-method in which the error was detected
+			 * @param {string} cause - More details about the cause of the error
+			 */
+			Error.prototype.appendDetails = function (className = "*NULL*", method = "*NULL*", cause = "*NULL*") {
+				this.path = pathOverrider || (this.path || "#") + ` -> [${className}]|(${method})`;
+				this.causes = causesOverrider || (this.causes || "#") + ` -> (${method})|${cause}`;
+			};
+			return resolve();
+		});
 	}
 }

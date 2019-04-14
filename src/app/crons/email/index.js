@@ -28,6 +28,7 @@ class EmailCronJobManager extends Decorator {
 			EMAIL_DELIVERY_TIME_ZONE
 		);
 		job.start();
+		this.logger.info('Email Cron Jobs Initiated Successfully');
 	}
 
 	/**
@@ -39,24 +40,29 @@ class EmailCronJobManager extends Decorator {
 		try {
 			const emails = await emailDao.getEmailsByMatchingFields({
 				status: EMAIL_STATUS.QUEUED,
-				archived: false
+				archived: false,
 			});
 			emails.forEach(email => {
-				emailService.sendEmail(email).then(() => {
-					emailDao.updateEmail(
-						{
-							_id: email._id,
-						},
-						{
-							status: EMAIL_STATUS.SENT,
-						}
-					);
-				}).catch((err) => {
-					this.logger.info(`[EMAIL_CRON_JOB_MANAGER] Failed to send queued mail id: ${email._id}, Error: ${err.message}`);
-				});
+				emailService
+					.sendEmail(email)
+					.then(() => {
+						emailDao.updateEmail(
+							{
+								_id: email._id,
+							},
+							{
+								status: EMAIL_STATUS.SENT,
+							}
+						);
+					})
+					.catch(err => {
+						err.appendDetails(this.constructor.name, this.sendQueuedEmailsOnDeliveryWindow.name);
+						this.logError(err);
+					});
 			});
 		} catch (err) {
-			throw err;
+			err.appendDetails(this.constructor.name, this.sendQueuedEmailsOnDeliveryWindow.name);
+			this.logError(err);
 		}
 	}
 }

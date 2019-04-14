@@ -16,10 +16,11 @@ class SendGridClient {
 			timeout: SEND_GRID_TIMEOUT,
 			headers: {
 				'content-type': 'application/json',
-				'authorization': `Bearer ${SEND_GRID_API_KEY}`,
+				authorization: `Bearer ${SEND_GRID_API_KEY}`,
 			},
 		});
 	}
+
 	/**
 	 * post email details to sendgrid api
 	 * @param {string} to - recipient address
@@ -28,7 +29,10 @@ class SendGridClient {
 	 * @return {Promise<void>} -
 	 */
 	async sendEmail({ to, content, subject }) {
-		return await this.post(definitions.SEND_GRID_MAIL_SEND_PATH, this.generateMailRequestBody({to, content, subject}));
+		return await this.post(
+			definitions.SEND_GRID_MAIL_SEND_PATH,
+			this.generateMailRequestBody({ to, content, subject })
+		);
 	}
 
 	/**
@@ -41,6 +45,7 @@ class SendGridClient {
 		try {
 			return await this.sendGridClient.post(url, data);
 		} catch (err) {
+			err.appendDetails(this.constructor.name, this.post.name);
 			throw err;
 		}
 	}
@@ -52,28 +57,28 @@ class SendGridClient {
 	 * @param {string} subject - mail subject
 	 * @return {{personalizations: {to: {email: *, name: string}[], subject: *}[], content: {type: string, value: *}[], from: {email: string, name: string}}} -
 	 */
-	generateMailRequestBody({to, content, subject}) {
+	generateMailRequestBody({ to, content, subject }) {
 		return {
-			"personalizations": [
+			personalizations: [
 				{
-					"to": [
+					to: [
 						{
-							"email": to,
-							"name": "John Doe"
-						}
+							email: to,
+							name: 'Different Client',
+						},
 					],
-					"subject": subject
-				}
+					subject: subject,
+				},
 			],
-			"content": [
+			content: [
 				{
-					"type": "text/plain",
-					"value": content
-				}
+					type: 'text/plain',
+					value: content,
+				},
 			],
-			"from": {
-				"email": "sam.smith@example.com",
-				"name": "Sam Smith"
+			from: {
+				email: 'different@example.com',
+				name: 'Different Team',
 			},
 		};
 	}

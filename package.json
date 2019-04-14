@@ -17,7 +17,7 @@
     "esdoc": "esdoc",
     "clean": "rm -rf dist/",
     "test": "jest",
-    "prettier": "prettier --config .prettierrc --write src/**/*"
+    "prettier": "prettier --config .prettierrc --write src/**/*.js"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
@@ -42,6 +42,8 @@
     "cron": "^1.7.0",
     "dotenv": "^6.2.0",
     "express": "^4.16.3",
+    "express-mung": "^0.5.1",
+    "express-request-id": "^1.4.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",
     "gulp-sourcemaps": "^2.6.4",

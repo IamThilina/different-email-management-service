@@ -16,7 +16,12 @@ class EmailService {
 	 * @return {Promise<void>} -
 	 */
 	async sendEmail({ to, content, subject }) {
-		return await sendGridClient.sendEmail({ to, content, subject });
+		try {
+			return await sendGridClient.sendEmail({ to, content, subject });
+		} catch (err) {
+			err.appendDetails(this.constructor.name, this.sendEmail.name);
+			throw err;
+		}
 	}
 
 	/**
@@ -25,15 +30,15 @@ class EmailService {
 	 */
 	isEmailSendingWindowOn() {
 		const {
-			EMAIL_DELIVERY_START_HOUR,
-			EMAIL_DELIVERY_END_HOUR,
-			EMAIL_DELIVERY_TIME_ZONE,
-		} = definitions,
+				EMAIL_DELIVERY_START_HOUR,
+				EMAIL_DELIVERY_END_HOUR,
+				EMAIL_DELIVERY_TIME_ZONE,
+			} = definitions,
 			currentHourInSydney = Number(
-			momentTimeZone()
-				.tz(EMAIL_DELIVERY_TIME_ZONE)
-				.format('H')
-		);
+				momentTimeZone()
+					.tz(EMAIL_DELIVERY_TIME_ZONE)
+					.format('H')
+			);
 		return (
 			Number(EMAIL_DELIVERY_START_HOUR) < currentHourInSydney &&
 			currentHourInSydney < Number(EMAIL_DELIVERY_END_HOUR)

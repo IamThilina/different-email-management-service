@@ -13,8 +13,14 @@ class EmailDao {
 	 * @return {Promise<void>} -
 	 */
 	async insertEmail({ to, content, subject, status }) {
-		const email = new Email({ to, content, subject, status });
-		return await email.save();
+		try {
+			const email = new Email({ to, content, subject, status });
+			return await email.save();
+		} catch (err) {
+			err.appendDetails(this.constructor.name, this.insertEmail.name);
+			throw err;
+		}
+
 	}
 
 	/**
@@ -30,6 +36,7 @@ class EmailDao {
 			}
 			throw new Error(`No email found for id: ${id}`);
 		} catch (err) {
+			err.appendDetails(this.constructor.name, this.getEmailById.name);
 			throw err;
 		}
 	}
@@ -43,6 +50,7 @@ class EmailDao {
 		try {
 			return await Email.find({ ...matchFields });
 		} catch (err) {
+			err.appendDetails(this.constructor.name, this.getEmailsByMatchingFields.name);
 			throw err;
 		}
 	}
@@ -64,6 +72,7 @@ class EmailDao {
 				}
 			);
 		} catch (err) {
+			err.appendDetails(this.constructor.name, this.updateEmail.name);
 			throw err;
 		}
 	}

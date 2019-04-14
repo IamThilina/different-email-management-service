@@ -1,11 +1,9 @@
-// d1##erent_u$er
-// different
-// mongodb://cake_shop:cake_shop@cake-shop-shard-00-00-0jzpd.mongodb.net:27017,cake-shop-shard-00-01-0jzpd.mongodb.net:27017,cake-shop-shard-00-02-0jzpd.mongodb.net:27017/cake_shop?ssl=true&replicaSet=Cake-Shop-shard-0&authSource=admin
 // core modules
 import mongoose from 'mongoose';
 
 // helpers
 import { definitions } from '../../../configs';
+import logger from '../../../utils/logger';
 
 const generateMongoUrl = ({
 	MONGO_HOST_1: host_1,
@@ -36,5 +34,7 @@ export default async () => {
 			mongoURL,
 			{ useNewUrlParser: true }
 		)
-		.then(() => Promise.resolve(), err => Promise.reject(err));
+		.then(() => {
+			logger.info(`Successfully established mongo connection to cluster: ${mongoURL}`);
+		}, err => Promise.reject(err));
 };
