@@ -35,54 +35,34 @@ class EmailDao {
 	}
 
 	/**
-	 * archive the email of given id
-	 * @param {string} id - unique email id
-	 * @return {Promise<*>} -
-	 */
-	async deleteEmailById(id) {
-		try {
-			return await Email.updateOne(
-				{
-					_id: id,
-				},
-				{
-					archived: true,
-				}
-			);
-		} catch (err) {
-			throw err;
-		}
-	}
-
-	/**
-	 * get emails in given status
-	 * @param {string} status - interested status of the mail
+	 * get emails matching the given fields & values
+	 * @param {Object} matchFields - fields to be matched
 	 * @return {Promise<void>} -
 	 */
-	async getEmailsByStatus(status) {
+	async getEmailsByMatchingFields(matchFields) {
 		try {
-			return await Email.find({
-				status,
-				archived: false
-			});
+			return await Email.find({ ...matchFields });
 		} catch (err) {
 			throw err;
 		}
 	}
 
 	/**
-	 * update given fields of emails which match with given match fields
+	 * update given fields of emails which match with given fields & values
 	 * @param {Object} matchFields - fields to be matched
 	 * @param {Object} updateFields - fields to updated
 	 * @return {Promise<*>} -
 	 */
 	async updateEmail(matchFields, updateFields) {
 		try {
-			return await Email.updateOne({
-				...matchFields
-			}, {
-				...updateFields
-			});
+			return await Email.updateOne(
+				{
+					...matchFields,
+				},
+				{
+					...updateFields,
+				}
+			);
 		} catch (err) {
 			throw err;
 		}

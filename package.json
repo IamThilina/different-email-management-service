@@ -58,7 +58,6 @@
     "test"
   ],
   "pre-commit": [
-    "git-branch",
     "lint-staged"
   ],
   "lint-staged": {

@@ -15,7 +15,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-// Base router
+// version specific base router
 app.use('/v1', router);
 
 // Catch 404 and forward to error handler

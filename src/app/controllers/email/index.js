@@ -17,16 +17,16 @@ import {EMAIL_STATUS} from '../../helpers/constants';
 class EmailController extends Decorator {
 
 	/**
-	 * send email
+	 * send|queue email based in the time window
 	 * @param {string} to - recipient address
 	 * @param {string} content - mail content
 	 * @param {string} subject - mail subject
-	 * @return {Promise} - promise
+	 * @return {Promise<{id: *, status: string}>} -
 	 */
 	async sendEmail({ to, content, subject }) {
+		let emailDoc,
+			status = EMAIL_STATUS.SENT;
 		try {
-			let emailDoc,
-				status = EMAIL_STATUS.SENT;
 			if(emailService.isEmailSendingWindowOn()) { // can send the mail right now, without queueing
 				await emailService.sendEmail({to, content, subject});
 				emailDoc = await emailDao.insertEmail({to, content, subject, status});
@@ -39,14 +39,19 @@ class EmailController extends Decorator {
 				status
 			};
 		} catch (err) {
-			throw err;
+			status = EMAIL_STATUS.FAILED;
+			emailDoc = await emailDao.insertEmail({to, content, subject, status});
+			return {
+				id: emailDoc._id,
+				status
+			};
 		}
 	}
 
 	/**
 	 * get email status
 	 * @param {string} id - unique email id
-	 * @return {Promise} - promise
+	 * @return {Promise<{id, status}>} -
 	 */
 	async getEmailDeliveryStatusById({ id }) {
 		try {
@@ -63,11 +68,16 @@ class EmailController extends Decorator {
 	/**
 	 * delete a mail in queued state
 	 * @param {string} id - unique email id
-	 * @return {Promise} - promise
+	 * @return {Promise<{id: *, deleted: boolean}>} -
 	 */
-	async deleteEmailById({ id }) {
+	async deleteQueuedEmailById({ id }) {
 		try {
-			await emailDao.deleteEmailById(id);
+			await emailDao.updateEmail({
+				_id: id,
+				status: EMAIL_STATUS.QUEUED
+			}, {
+				archived: true
+			});
 			return {
 				id,
 				deleted: true

@@ -3,11 +3,11 @@
 import express from 'express';
 import Decorator from './helpers/decorator';
 
-// Sub routers
+// Sub level routers
 import emailRouter from './routers/email';
 
 /**
- * router for xyz ms
+ * v1 base router, delegate requests to sub level routers
  */
 class Router extends Decorator {
 	/**
