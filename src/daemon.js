@@ -8,6 +8,7 @@ import {ENV} from './app/helpers/constants';
 // Modules that need to be bootstrapped before application starts
 import mongoDbConnector from './app/daos/mongo';
 import cronJobManager from './app/crons';
+import sendGridClient from './app/clients/sendGrid';
 
 /**
  * All daemon services that should be instantiated before starting the https server, or that can be
@@ -34,6 +35,7 @@ export default class Daemon {
 	 */
 	static initAsyncServices() {
 		cronJobManager.init();
+		sendGridClient.init();
 	}
 
 	/**

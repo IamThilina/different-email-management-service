@@ -24,9 +24,9 @@ class EmailDao {
 	 */
 	async getEmailById(id) {
 		try {
-			const emails = await Email.findById(id);
-			if (emails.length) {
-				return emails[0];
+			const email = await Email.findById(id);
+			if (email) {
+				return email;
 			}
 			throw new Error(`No email found for id: ${id}`);
 		} catch (err) {
@@ -41,7 +41,7 @@ class EmailDao {
 	 */
 	async deleteEmailById(id) {
 		try {
-			return await Email.update(
+			return await Email.updateOne(
 				{
 					_id: id,
 				},
@@ -78,7 +78,7 @@ class EmailDao {
 	 */
 	async updateEmail(matchFields, updateFields) {
 		try {
-			return await Email.update({
+			return await Email.updateOne({
 				...matchFields
 			}, {
 				...updateFields

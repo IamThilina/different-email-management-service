@@ -28,15 +28,15 @@ class EmailService {
 			EMAIL_DELIVERY_START_HOUR,
 			EMAIL_DELIVERY_END_HOUR,
 			EMAIL_DELIVERY_TIME_ZONE,
-		} = definitions;
+		} = definitions,
+			currentHourInSydney = Number(
+			momentTimeZone()
+				.tz(EMAIL_DELIVERY_TIME_ZONE)
+				.format('H')
+		);
 		return (
-			EMAIL_DELIVERY_START_HOUR <
-			Number(
-				momentTimeZone()
-					.tz(EMAIL_DELIVERY_TIME_ZONE)
-					.format('H')
-			) <
-			EMAIL_DELIVERY_END_HOUR
+			Number(EMAIL_DELIVERY_START_HOUR) < currentHourInSydney &&
+			currentHourInSydney < Number(EMAIL_DELIVERY_END_HOUR)
 		);
 	}
 }
