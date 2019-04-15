@@ -9,7 +9,6 @@
 
 ### Introduction
 This is a REST API to support email management. Industry standard technologies have been adopted to each aspect of this project. They are
-*** 
 
 1. Language - Node Js 
 2. Framework - Express Js 
@@ -20,7 +19,7 @@ This is a REST API to support email management. Industry standard technologies h
 7. Task Runner - Gulp 
 8. API Documentation - Swagger
 9. Source Documentation - EsDoc 
-10. Test Framework - Jest 
+10. Unit Test Framework - Jest 
 11. DB - Mongo 
 12. Logger - Bunyan 
 
@@ -40,6 +39,8 @@ This is a REST API to support email management. Industry standard technologies h
 │   │   ├── daos (all database related files resides here)
 │   │   |   └── mongo (all mongo related files resides here)
 │   │   |   |   └── email (all data access files/models related to email collection)
+│   │   ├── errorHandlers (all error scenarios related to business logic are handled here)
+│   │   |   └── email (all error scenarios related to email business logic are handled here)
 │   │   ├── clients (all external api consumers)
 │   │   |   └── email (sendgrid api consumer)
 │   │   ├── crons (all cron related files resides here)
@@ -86,8 +87,7 @@ This is a REST API to support email management. Industry standard technologies h
 ### Developer Guide
 #### prerequisite
 1. node 8
-2. gulp
-3. yarn
+2. yarn
 
 #### how to start the application
 1. copy the `.env` file to project directory

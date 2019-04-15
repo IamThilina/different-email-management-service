@@ -1,11 +1,14 @@
 // core modules
 import Decorator from '../../helpers/decorator';
 
-// services
+// service
 import emailService from '../../services/email';
 
-// daos
+// dao
 import emailDao from '../../daos/mongo/email';
+
+// error handler
+import emailErrorHandler from '../../errorHandlers/email';
 
 // helpers
 import { EMAIL_STATUS } from '../../helpers/constants';
@@ -61,11 +64,14 @@ class EmailController extends Decorator {
 	 */
 	async getEmailDeliveryStatusById({ id }) {
 		try {
-			const { _id, status } = await emailDao.getEmailById(id);
-			return {
-				id: _id,
-				status,
-			};
+			const email = await emailDao.getEmailById(id);
+			if (email) {
+				return {
+					id,
+					status: email.status,
+				};
+			}
+			emailErrorHandler.handleNoMatchingEmailToGetStatus(id);
 		} catch (err) {
 			err.appendDetails(this.constructor.name, this.getEmailDeliveryStatusById.name);
 			throw err;
@@ -79,7 +85,7 @@ class EmailController extends Decorator {
 	 */
 	async deleteQueuedEmailById({ id }) {
 		try {
-			await emailDao.updateEmail(
+			const {nModified} = await emailDao.updateEmail(
 				{
 					_id: id,
 					status: EMAIL_STATUS.QUEUED,
@@ -88,10 +94,13 @@ class EmailController extends Decorator {
 					archived: true,
 				}
 			);
-			return {
-				id,
-				deleted: true,
-			};
+			if(nModified) {
+				return {
+					id,
+					deleted: true,
+				};
+			}
+			emailErrorHandler.handleNoMatchingEmailToDelete(id);
 		} catch (err) {
 			err.appendDetails(this.constructor.name, this.deleteQueuedEmailById.name);
 			throw err;

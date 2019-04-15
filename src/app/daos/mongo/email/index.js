@@ -20,7 +20,6 @@ class EmailDao {
 			err.appendDetails(this.constructor.name, this.insertEmail.name);
 			throw err;
 		}
-
 	}
 
 	/**
@@ -30,11 +29,7 @@ class EmailDao {
 	 */
 	async getEmailById(id) {
 		try {
-			const email = await Email.findById(id);
-			if (email) {
-				return email;
-			}
-			throw new Error(`No email found for id: ${id}`);
+			return await Email.findById(id);
 		} catch (err) {
 			err.appendDetails(this.constructor.name, this.getEmailById.name);
 			throw err;
@@ -48,7 +43,7 @@ class EmailDao {
 	 */
 	async getEmailsByMatchingFields(matchFields) {
 		try {
-			return await Email.find({ ...matchFields });
+			return await Email.find(matchFields);
 		} catch (err) {
 			err.appendDetails(this.constructor.name, this.getEmailsByMatchingFields.name);
 			throw err;
@@ -63,14 +58,7 @@ class EmailDao {
 	 */
 	async updateEmail(matchFields, updateFields) {
 		try {
-			return await Email.updateOne(
-				{
-					...matchFields,
-				},
-				{
-					...updateFields,
-				}
-			);
+			return await Email.updateOne(matchFields, updateFields);
 		} catch (err) {
 			err.appendDetails(this.constructor.name, this.updateEmail.name);
 			throw err;
